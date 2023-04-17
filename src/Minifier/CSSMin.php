@@ -1,4 +1,5 @@
-<?php namespace Minifier;
+<?php
+namespace Minifier;
 
 /*!
  * cssmin.php rev 91c5ea5
@@ -46,7 +47,7 @@ class CSSMin
         $this->memory_limit = 128 * 1048576; // 128MB in bytes
         $this->max_execution_time = 60; // 1 min
         $this->pcre_backtrack_limit = 1000 * 1000;
-        $this->pcre_recursion_limit =  500 * 1000;
+        $this->pcre_recursion_limit = 500 * 1000;
 
         $this->raise_php_limits = (bool) $raise_php_limits;
     }
@@ -90,7 +91,7 @@ class CSSMin
         }
 
         // preserve strings so their content doesn't get accidentally minified
-        $css = preg_replace_callback('/(?:"(?:[^\\\\"]|\\\\.|\\\\)*")|'."(?:'(?:[^\\\\']|\\\\.|\\\\)*')/S", array($this, 'replace_string'), $css);
+        $css = preg_replace_callback('/(?:"(?:[^\\\\"]|\\\\.|\\\\)*")|' . "(?:'(?:[^\\\\']|\\\\.|\\\\)*')/S", array($this, 'replace_string'), $css);
 
         // Let's divide css code in chunks of 25.000 chars aprox.
         // Reason: PHP's PCRE functions like preg_replace have a "backtrack limit"
@@ -194,7 +195,7 @@ class CSSMin
             'memory_limit' => $this->memory_limit,
             'max_execution_time' => $this->max_execution_time,
             'pcre.backtrack_limit' => $this->pcre_backtrack_limit,
-            'pcre.recursion_limit' =>  $this->pcre_recursion_limit
+            'pcre.recursion_limit' => $this->pcre_recursion_limit
         );
 
         // If current settings are higher respect them.
@@ -228,8 +229,8 @@ class CSSMin
                 $token_tring = self::TOKEN . (count($this->preserved_tokens) - 1) . '___';
                 $css = preg_replace($placeholder, $token_tring, $css, 1);
                 // Preserve new lines for /*! important comments
-                $css = preg_replace('/\s*[\n\r\f]+\s*(\/\*'. $token_tring .')/S', self::NL.'$1', $css);
-                $css = preg_replace('/('. $token_tring .'\*\/)\s*[\n\r\f]+\s*/S', '$1'.self::NL, $css);
+                $css = preg_replace('/\s*[\n\r\f]+\s*(\/\*' . $token_tring . ')/S', self::NL . '$1', $css);
+                $css = preg_replace('/(' . $token_tring . '\*\/)\s*[\n\r\f]+\s*/S', '$1' . self::NL, $css);
                 continue;
             }
 
@@ -237,10 +238,10 @@ class CSSMin
             // shorten that to /*\*/ and the next one to /**/
             if (substr($token, (strlen($token) - 1), 1) === '\\') {
                 $this->preserved_tokens[] = '\\';
-                $css = preg_replace($placeholder,  self::TOKEN . (count($this->preserved_tokens) - 1) . '___', $css, 1);
+                $css = preg_replace($placeholder, self::TOKEN . (count($this->preserved_tokens) - 1) . '___', $css, 1);
                 $i = $i + 1; // attn: advancing the loop
                 $this->preserved_tokens[] = '';
-                $css = preg_replace('/' . self::COMMENT . $i . '___/',  self::TOKEN . (count($this->preserved_tokens) - 1) . '___', $css, 1);
+                $css = preg_replace('/' . self::COMMENT . $i . '___/', self::TOKEN . (count($this->preserved_tokens) - 1) . '___', $css, 1);
                 continue;
             }
 
@@ -251,7 +252,7 @@ class CSSMin
                 if ($start_index > 2) {
                     if (substr($css, $start_index - 3, 1) === '>') {
                         $this->preserved_tokens[] = '';
-                        $css = preg_replace($placeholder,  self::TOKEN . (count($this->preserved_tokens) - 1) . '___', $css, 1);
+                        $css = preg_replace($placeholder, self::TOKEN . (count($this->preserved_tokens) - 1) . '___', $css, 1);
                     }
                 }
             }
@@ -322,22 +323,22 @@ class CSSMin
         // Fix for issue: #2528142
         // Replace text-shadow:0; with text-shadow:0 0 0;
         $css = preg_replace_callback(
-                   '/(text-shadow\:0)(;|\})/i',
-                   function($m) {
-                       return strtolower($m[1] . ' 0 0' . $m[2]);
-                   },
-                   $css
-               );
+            '/(text-shadow\:0)(;|\})/i',
+            function ($m) {
+                return strtolower($m[1] . ' 0 0' . $m[2]);
+            },
+            $css
+        );
 
         // Replace background-position:0; with background-position:0 0;
         // same for transform-origin
         $css = preg_replace_callback(
-                   '/(background\-position|(?:webkit|moz|o|ms|)\-?transform\-origin)\:0(;|\})/iS',
-                   function($m) {
-                       return strtolower($m[1] . ':0 0' . $m[2]);
-                   },
-                   $css
-               );
+            '/(background\-position|(?:webkit|moz|o|ms|)\-?transform\-origin)\:0(;|\})/iS',
+            function ($m) {
+                return strtolower($m[1] . ':0 0' . $m[2]);
+            },
+            $css
+        );
 
         // Shorten colors from rgb(51,102,153) to #336699, rgb(100%,0%,0%) to #ff0000 (sRGB color space)
         // Shorten colors from hsl(0, 100%, 50%) to #ff0000 (sRGB color space)
@@ -350,12 +351,12 @@ class CSSMin
 
         // border: none to border:0, outline: none to outline:0
         $css = preg_replace_callback(
-                   '/(border\-?(?:top|right|bottom|left|)|outline)\:none(;|\})/iS',
-                   function($m) {
-                       return strtolower($m[1] . ':0' . $m[2]);
-                   },
-                   $css
-               );
+            '/(border\-?(?:top|right|bottom|left|)|outline)\:none(;|\})/iS',
+            function ($m) {
+                return strtolower($m[1] . ':0' . $m[2]);
+            },
+            $css
+        );
 
         // shorter opacity IE filter
         $css = preg_replace('/progid\:DXImageTransform\.Microsoft\.Alpha\(Opacity\=/i', 'alpha(opacity=', $css);
@@ -383,7 +384,7 @@ class CSSMin
         $css = preg_replace('/;;+/', ';', $css);
 
         // Restore new lines for /*! important comments
-        $css = preg_replace('/'. self::NL .'/', "\n", $css);
+        $css = preg_replace('/' . self::NL . '/', "\n", $css);
 
         // restore preserved comments and strings
         for ($i = 0, $max = count($this->preserved_tokens); $i < $max; $i++) {
@@ -427,7 +428,7 @@ class CSSMin
                 $terminator = ')';
             }
 
-            while ($found_terminator === FALSE && $end_index+1 <= $max_index) {
+            while ($found_terminator === FALSE && $end_index + 1 <= $max_index) {
                 $end_index = $this->index_of($css, $terminator, $end_index + 1);
 
                 // endIndex == 0 doesn't really apply here
@@ -510,9 +511,11 @@ class CSSMin
                 // Restore, maintain case, otherwise filter will break
                 $sb[] = $m[1] . '#' . $m[2] . $m[3] . $m[4] . $m[5] . $m[6] . $m[7];
             } else {
-                if (strtolower($m[2]) == strtolower($m[3]) &&
+                if (
+                    strtolower($m[2]) == strtolower($m[3]) &&
                     strtolower($m[4]) == strtolower($m[5]) &&
-                    strtolower($m[6]) == strtolower($m[7])) {
+                    strtolower($m[6]) == strtolower($m[7])
+                ) {
                     // Compress.
                     $hex = '#' . strtolower($m[3] . $m[5] . $m[7]);
                 } else {
@@ -571,7 +574,7 @@ class CSSMin
     private function rgb_to_hex($matches)
     {
         // Support for percentage values rgb(100%, 0%, 45%);
-        if ($this->index_of($matches[1], '%') >= 0){
+        if ($this->index_of($matches[1], '%') >= 0) {
             $rgbcolors = explode(',', str_replace('%', '', $matches[1]));
             for ($i = 0; $i < count($rgbcolors); $i++) {
                 $rgbcolors[$i] = $this->round_number(floatval($rgbcolors[$i]) * 2.55);
@@ -587,7 +590,7 @@ class CSSMin
         }
 
         // Fix for issue #2528093
-        if (!preg_match('/[\s\,\);\}]/', $matches[2])){
+        if (!preg_match('/[\s\,\);\}]/', $matches[2])) {
             $matches[2] = ' ' . $matches[2];
         }
 
@@ -611,12 +614,12 @@ class CSSMin
         } else {
             $v2 = $l < 0.5 ? $l * (1 + $s) : ($l + $s) - ($s * $l);
             $v1 = (2 * $l) - $v2;
-            $r = $this->round_number(255 * $this->hue_to_rgb($v1, $v2, $h + (1/3)));
+            $r = $this->round_number(255 * $this->hue_to_rgb($v1, $v2, $h + (1 / 3)));
             $g = $this->round_number(255 * $this->hue_to_rgb($v1, $v2, $h));
-            $b = $this->round_number(255 * $this->hue_to_rgb($v1, $v2, $h - (1/3)));
+            $b = $this->round_number(255 * $this->hue_to_rgb($v1, $v2, $h - (1 / 3)));
         }
 
-        return $this->rgb_to_hex(array('', $r.','.$g.','.$b, $matches[2]));
+        return $this->rgb_to_hex(array('', $r . ',' . $g . ',' . $b, $matches[2]));
     }
 
     /* HELPERS
@@ -626,9 +629,12 @@ class CSSMin
     private function hue_to_rgb($v1, $v2, $vh)
     {
         $vh = $vh < 0 ? $vh + 1 : ($vh > 1 ? $vh - 1 : $vh);
-        if ($vh * 6 < 1) return $v1 + ($v2 - $v1) * 6 * $vh;
-        if ($vh * 2 < 1) return $v2;
-        if ($vh * 3 < 2) return $v1 + ($v2 - $v1) * ((2/3) - $vh) * 6;
+        if ($vh * 6 < 1)
+            return $v1 + ($v2 - $v1) * 6 * $vh;
+        if ($vh * 2 < 1)
+            return $v2;
+        if ($vh * 3 < 2)
+            return $v1 + ($v2 - $v1) * ((2 / 3) - $vh) * 6;
         return $v1;
     }
 
@@ -735,9 +741,15 @@ class CSSMin
     {
         if (is_string($size)) {
             switch (substr($size, -1)) {
-                case 'M': case 'm': return $size * 1048576;
-                case 'K': case 'k': return $size * 1024;
-                case 'G': case 'g': return $size * 1073741824;
+                case 'M':
+                case 'm':
+                    return $size * 1048576;
+                case 'K':
+                case 'k':
+                    return $size * 1024;
+                case 'G':
+                case 'g':
+                    return $size * 1073741824;
             }
         }
 

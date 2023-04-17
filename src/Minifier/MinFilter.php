@@ -1,4 +1,5 @@
-<?php namespace Minifier;
+<?php
+namespace Minifier;
 
 use Minifier\JSMin;
 use Minifier\CSSMin;
@@ -16,35 +17,38 @@ use Assetic\Filter\FilterInterface;
  */
 class MinFilter implements FilterInterface
 {
-    private $availableType = array('css','js');
+    private $availableType = array('css', 'js');
     private $type;
 
     /**
      * Constructor
      * @param string [css|js]
      */
-    public function __construct($type = '') {
-    	if (empty($type) || !in_array($type, $this->availableType)) {
-    		throw new \InvalidArgumentException('Invalid asset type');
-    	}
+    public function __construct($type = '')
+    {
+        if (empty($type) || !in_array($type, $this->availableType)) {
+            throw new \InvalidArgumentException('Invalid asset type');
+        }
 
-    	$this->type = $type;
+        $this->type = $type;
     }
 
-    public function filterLoad(AssetInterface $asset) {}
+    public function filterLoad(AssetInterface $asset)
+    {
+    }
 
     public function filterDump(AssetInterface $asset)
     {
-    	switch ($this->type) {
-    		case 'css':
-    			$cssMin = new CSSMin();
-    			$content = $cssMin->run($asset->getContent());
-    			break;
-    		
-    		case 'js':
-    			$content = JSMin::minify($asset->getContent());
-    			break;
-    	}
+        switch ($this->type) {
+            case 'css':
+                $cssMin = new CSSMin();
+                $content = $cssMin->run($asset->getContent());
+                break;
+
+            case 'js':
+                $content = JSMin::minify($asset->getContent());
+                break;
+        }
 
         $asset->setContent($content);
     }

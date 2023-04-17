@@ -19,19 +19,19 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $treeBuilder->root('minifier')
             ->children()
-                ->arrayNode('filter')
-                    ->children()
-                        ->arrayNode('name')
-                            ->children()
-                                ->scalarNode('css')->defaultValue('minifier_css')->end()
-                                ->scalarNode('js')->defaultValue('minifier_js')->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
+            ->arrayNode('filter')
+            ->children()
+            ->arrayNode('name')
+            ->children()
+            ->scalarNode('css')->defaultValue('minifier_css')->end()
+            ->scalarNode('js')->defaultValue('minifier_js')->end()
             ->end()
-        ->end();
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end();
 
         return $treeBuilder;
     }
-} 
+}

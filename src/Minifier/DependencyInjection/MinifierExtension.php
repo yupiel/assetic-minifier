@@ -25,7 +25,7 @@ class MinifierExtension extends Extension
         $container->setParameter('minifier.filter.name.css', $config['filter']['name']['css']);
         $container->setParameter('minifier.filter.name.js', $config['filter']['name']['js']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
     }
-} 
+}
