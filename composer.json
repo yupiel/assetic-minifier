@@ -5,7 +5,7 @@
         "compression",
         "minification"
     ],
-    "homepage": "https://github.com/toopay/assetic-minifier",
+    "homepage": "https://github.com/yupiel/assetic-minifier",
     "type": "library",
     "license": "BSD-3-Clause",
     "authors": [
